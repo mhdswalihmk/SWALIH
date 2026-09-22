@@ -1,5 +1,5 @@
 {
-  "name": "Bubbles & Co. Laundry Service",
+  "name": "swalih laundry",
   "description": "Modern laundry service web application with customer booking, real-time order tracking, and full admin panel.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
