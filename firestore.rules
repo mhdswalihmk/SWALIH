@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+        (request.auth.token.email == 'muhammedsinan67835@gmail.com' ||
+         exists(/databases/$(database)/documents/admins/$(request.auth.token.email)));
+    }
+
+    // Services collection: Public read, Admin write
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders collection: Users can read/write their own orders. Admins can read/write all orders.
+    match /orders/{orderId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Admins collection: Only admins can read/write
+    match /admins/{email} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
