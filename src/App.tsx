@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db, collection, onSnapshot } from './firebase';
+import { auth, googleProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, db, collection, onSnapshot } from './firebase';
 import { UserProfile, LaundryService } from './types';
 import { seedInitialServicesIfNeeded } from './seedData';
 import { Navbar } from './components/Navbar';
@@ -19,6 +19,10 @@ export default function App() {
 
   // Auth State Listener
   useEffect(() => {
+    getRedirectResult(auth).catch((err) => {
+      console.log('Redirect result note:', err);
+    });
+
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const email = firebaseUser.email || '';
@@ -63,8 +67,13 @@ export default function App() {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error: any) {
-      console.error('Login error:', error);
-      alert('Sign-in failed: ' + error.message);
+      console.warn('Popup sign in failed, trying redirect:', error);
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (redirectError: any) {
+        console.error('Redirect sign in error:', redirectError);
+        alert('Sign-in failed: ' + (redirectError.message || error.message));
+      }
     }
   };
 

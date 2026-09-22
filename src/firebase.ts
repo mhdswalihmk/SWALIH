@@ -3,6 +3,8 @@ import {
   getAuth, 
   GoogleAuthProvider, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   signOut, 
   onAuthStateChanged,
   User 
@@ -40,6 +42,8 @@ export const googleProvider = new GoogleAuthProvider();
 
 export {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged,
   collection,
